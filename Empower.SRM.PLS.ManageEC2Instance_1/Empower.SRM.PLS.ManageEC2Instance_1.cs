@@ -83,6 +83,26 @@ namespace Empower.SRM.PLS.ManageEC2Instance
 				helper.Log($"Executing profile-Load with Action {configurationInfo?.ProfileAction}", LogEntryType.Info);
 
 				// TODO: Implement logic here
+				var parametersConfiguration = helper.GetNodeSrmParametersConfiguration(configurationInfo, nodeProfileConfiguration).ToList();
+
+				var ec2ManageInstance = parametersConfiguration.SingleOrDefault(x => string.Equals(x.ProfileParameterName, "AWS EC2 State"));
+
+				if (ec2ManageInstance == null)
+				{
+					// profile instance doesn't have parameter configuration. No configuration will be done.
+					return;
+				}
+
+				var value = Convert.ToString(ec2ManageInstance.Value.GetValue());
+
+				if (string.Equals(value, "Start", StringComparison.InvariantCultureIgnoreCase))
+				{
+					element.SetParameter(1007, 1);
+				}
+				else
+				{
+					element.SetParameter(1008, 1);
+				}
 
 				helper.Log($"Successfully configured resource", LogEntryType.Info);
 			}
